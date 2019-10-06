@@ -8,16 +8,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-Requires two pacakge:
+Requires two pacakges to generate a working enviroment:
 ```
-pip install pipenv
-```
-
-```
-pip install pyenv
+pip install pipenv pyenv
 ```
 
-Install dependencies
+Install dependencies using the Pipfile:
 
 ```
 pipenv install Pipfile
@@ -25,7 +21,7 @@ pipenv install Pipfile
 
 ## Running
 
-Create an account a [https://www.clippings.io].
+Create an account a https://www.clippings.io.
 
 Add your username and password to the ```example_config.py``` file and remove the "example_" so it looks like ```config.py```.
 
