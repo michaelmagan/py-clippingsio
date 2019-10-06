@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-Requires two pacakges to generate a working enviroment:
+Requires two packages to generate a working environment:
 ```
 pip install pipenv pyenv
 ```
