@@ -1,2 +1,3 @@
 .python_version
 Pipfile.lock
+config.py

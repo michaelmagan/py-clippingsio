@@ -1,44 +1,62 @@
+import os
+import json
+
+from requests_toolbelt import MultipartEncoder
 import requests
 
-import browser_cookie3
+import config
 
-cj = browser_cookie3.chrome()
-url = "https://api.clippings.io/api/UserFileUploads/"
+USERNAME = config.username
+PASSWORD = config.password
 
+def get_auth(username, password):
+    '''Enter username and password and return Authorization headers.'''
 
-headers = {
-    'Host':'my.clippings.io',
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'DNT': '1',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-User': '?1',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-    'Sec-Fetch-Site': 'same-origin',
-    'Referer': 'https://my.clippings.io/',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'en-US,en;q=0.9,es-419;q=0.8,es;q=0.7'
-}
+    url = "https://api.clippings.io/api/login"
 
-payload = {
-    'Accept':'application/json',
-    'Cache-Control': 'no-cache',
-    'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryJtIW4xjUhazQ7b4Y',
-    'DNT': '1',
-    'Origin':  'https://my.clippings.io',
-	'Referer': 'https://my.clippings.io/',
-	'Sec-Fetch-Mode': 'cors',
-	'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36',
-	'X-Requested-With':' XMLHttpRequest'
-}
-
-r = requests.POST(
-    url,
-    headers=headers,
-    payload=payload,
-    cookies=cj
+    payload = dict(
+        password = password,
+        username = username
     )
 
-print(r.content)
+    r = requests.post(
+        url,
+        data=payload
+    )
+    if r.status_code == 200:
+        j = json.loads(r.content)
+        print(session.cookies.get_dict())
+        return True, j['token']
+    else:
+        return False, None
+
+
+def upload_clippings(token, file):
+    '''Provide Authorization token and file to upload.'''
+
+    url = "https://api.clippings.io/api/UserFileUploads/"
+
+    m = MultipartEncoder(
+        fields = {
+            'qquuid': 'd00696d7-becf-4032-9b78-b65404488907',
+            'qqfilename': file,
+            'qqtotalfilesize': str(os.stat(file).st_size),
+            'qqfile': ('file', open(file, "rb"), 'text/plain')
+        }
+    )
+
+    r = requests.post(
+        url,
+        data=m,
+        headers={
+            'Authorization': str(token),
+            'Content-Type': m.content_type
+            }
+    )
+
+    #Currently it returns 200 and error 'has an invalid extension'
+    print(r.status_code)
+    print(r.content)
+
+result, token = get_auth(USERNAME,PASSWORD)
+upload_clippings(token, 'My Clippings.txt')
